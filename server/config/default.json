@@ -1,0 +1,44 @@
+{
+  "server": {
+    "port": 3001
+  },
+  "cors": {
+    "origin": "http://localhost:3000"
+  },
+  "whatsapp": {
+    "verifyToken": "",
+    "appSecret": "",
+    "accessToken": "",
+    "phoneNumberId": "",
+    "businessAccountId": "",
+    "graphApiVersion": "v23.0"
+  },
+  "database": {
+    "url": ""
+  },
+  "auth": {
+    "adminEmail": "",
+    "adminPassword": ""
+  },
+  "instagram": {
+    "verifyToken": "",
+    "appSecret": "",
+    "accessToken": "",
+    "accountId": "",
+    "graphApiVersion": "v23.0",
+    "simulate": "",
+    "debugWebhook": ""
+  },
+  "messenger": {
+    "verifyToken": "",
+    "appSecret": "",
+    "pageAccessToken": "",
+    "pageId": "",
+    "graphApiVersion": "v23.0",
+    "debugWebhook": ""
+  },
+  "autoReply": {
+    "minConfidence": 0.7,
+    "timeZone": "America/Costa_Rica"
+  }
+}

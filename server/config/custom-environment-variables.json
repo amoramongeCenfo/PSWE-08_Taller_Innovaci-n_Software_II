@@ -1,0 +1,47 @@
+{
+  "server": {
+    "port": {
+      "__name": "PORT",
+      "__format": "number"
+    }
+  },
+  "cors": {
+    "origin": "CORS_ORIGIN"
+  },
+  "whatsapp": {
+    "verifyToken": "WHATSAPP_VERIFY_TOKEN",
+    "appSecret": "WHATSAPP_APP_SECRET",
+    "accessToken": "WHATSAPP_ACCESS_TOKEN",
+    "phoneNumberId": "WHATSAPP_PHONE_NUMBER_ID",
+    "businessAccountId": "WHATSAPP_BUSINESS_ACCOUNT_ID",
+    "graphApiVersion": "GRAPH_API_VERSION"
+  },
+  "database": {
+    "url": "DATABASE_URL"
+  },
+  "auth": {
+    "adminEmail": "AUTH_ADMIN_EMAIL",
+    "adminPassword": "AUTH_ADMIN_PASSWORD"
+  },
+  "instagram": {
+    "verifyToken": "INSTAGRAM_VERIFY_TOKEN",
+    "appSecret": "INSTAGRAM_APP_SECRET",
+    "accessToken": "INSTAGRAM_ACCESS_TOKEN",
+    "accountId": "INSTAGRAM_ACCOUNT_ID",
+    "graphApiVersion": "GRAPH_API_VERSION",
+    "simulate": "INSTAGRAM_SIMULATE",
+    "debugWebhook": "INSTAGRAM_DEBUG_WEBHOOK"
+  },
+  "messenger": {
+    "verifyToken": "MESSENGER_VERIFY_TOKEN",
+    "appSecret": "MESSENGER_APP_SECRET",
+    "pageAccessToken": "MESSENGER_PAGE_ACCESS_TOKEN",
+    "pageId": "MESSENGER_PAGE_ID",
+    "graphApiVersion": "GRAPH_API_VERSION",
+    "debugWebhook": "MESSENGER_DEBUG_WEBHOOK"
+  },
+  "autoReply": {
+    "minConfidence": "AUTOREPLY_MIN_CONFIDENCE",
+    "timeZone": "AUTOREPLY_TIME_ZONE"
+  }
+}
