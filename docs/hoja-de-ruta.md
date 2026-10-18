@@ -48,10 +48,14 @@ Ver [Servidor](servidor.md) y [Integración con WhatsApp](integracion-whatsapp.m
 - ⏳ Sugerencia de respuesta con IA, siempre aprobada por la persona (tarjeta "Colibri preparó esta respuesta" en Mensajes)
 - ⏳ Resolver conversaciones y perfil del cliente
 
-## Etapa 5. Alertas de reputación ⏳
+## Etapa 5. Alertas de reputación 🚧
 
-- ⏳ Detección de mensajes con riesgo (quejas, enojo, palabras clave)
-- 🚧 Pantalla de Alertas con prioridad y acción rápida: diseño listo, sin datos ni lógica
+- 🚧 Detección de mensajes con riesgo (quejas, enojo, palabras clave): analizador de comentarios
+  por palabras clave (`BasicCommentAnalyzer`) con su contrato de pruebas; falta la fuente real de
+  comentarios de las redes
+- ✅ Pantalla de Alertas con prioridad y acción rápida, conectada a la API (`/api/alerts`)
+- ✅ Almacenamiento de alertas y su configuración (memoria o PostgreSQL) y script de datos de
+  ejemplo (`pnpm --filter @colibri/server alerts:seed`)
 
 ## Etapa 6. Más canales ⏳
 

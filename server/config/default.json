@@ -40,5 +40,12 @@
   "autoReply": {
     "minConfidence": 0.7,
     "timeZone": "America/Costa_Rica"
+  },
+  "llm": {
+    "provider": "",
+    "apiKey": "",
+    "model": "",
+    "baseUrl": "",
+    "timeoutMs": ""
   }
 }

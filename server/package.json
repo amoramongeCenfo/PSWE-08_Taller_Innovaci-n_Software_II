@@ -13,7 +13,8 @@
     "onboarding:reset": "tsx src/scripts/resetOnboarding.ts",
     "messenger:subscribe": "tsx src/scripts/subscribeMessenger.ts",
     "instagram:subscribe": "tsx src/scripts/subscribeInstagram.ts",
-    "instagram:simulate": "tsx src/scripts/simulateInstagram.ts"
+    "instagram:simulate": "tsx src/scripts/simulateInstagram.ts",
+    "alerts:seed": "tsx src/scripts/seedAlerts.ts"
   },
   "dependencies": {
     "config": "^5.0.1",
