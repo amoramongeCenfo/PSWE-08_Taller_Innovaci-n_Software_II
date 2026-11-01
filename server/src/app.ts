@@ -16,6 +16,9 @@ import type { KnowledgeRepository } from './modules/knowledge/knowledgeRepositor
 import { createKnowledgeRouter } from './modules/knowledge/knowledgeRoutes';
 import { createBusinessRouter, createProfileRouter } from './modules/profile/profileRoutes';
 import type { ProfileService } from './modules/profile/profileService';
+import type { AlertsRepository } from './modules/alerts/alertsRepository';
+import { createAlertsRouter } from './modules/alerts/alertsRouter';
+import { createCommentAnalyzer } from './modules/alerts/llmProviderFactory';
 import { createInstagramRouter, type ProfileLookup } from './modules/instagram/instagram.routes';
 import { createMessengerRouter } from './modules/messenger/messenger.routes';
 import { createWhatsAppRouter } from './modules/whatsapp/whatsapp.routes';
@@ -28,6 +31,8 @@ export interface AppServices {
   knowledge: KnowledgeRepository;
   /** Arma las respuestas automáticas con la información del negocio. */
   composer: ReplyComposer;
+  /** Almacena las alertas de reputación y su configuración. */
+  alerts: AlertsRepository;
   /** Busca el nombre de quien escribe por Instagram. Opcional: sin él, se guarda sin nombre. */
   instagramLookup?: ProfileLookup;
   /** Busca el nombre de quien escribe por Messenger. Opcional: sin él, se guarda sin nombre. */
@@ -100,6 +105,11 @@ export function createApp(appConfig: AppConfig, services: AppServices): Express 
   );
   app.use('/api/profile', authenticated, createProfileRouter(services.profile));
   app.use('/api/conversations', authenticated, createConversationRouter(services.conversations));
+  app.use(
+    '/api/alerts',
+    authenticated,
+    createAlertsRouter(services.alerts, createCommentAnalyzer(appConfig.llm)),
+  );
 
   app.use('/api', (_req, res) => {
     res.status(404).json({ code: 'NOT_FOUND', message: 'Recurso no encontrado' });

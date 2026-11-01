@@ -128,4 +128,29 @@ export const migrations: readonly Migration[] = [
       ALTER TABLE assistant_settings ADD COLUMN auto_reply_paused boolean NOT NULL DEFAULT false;
     `,
   },
+  {
+    id: '007_reputation_alerts',
+    sql: `
+      -- Alertas de reputación detectadas en comentarios públicos (etapa 5).
+      -- Lo anidado (comentario, hilo, respuesta sugerida) va en la columna jsonb 'data'.
+      CREATE TABLE reputation_alerts (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        channel text NOT NULL,
+        risk text NOT NULL CHECK (risk IN ('alto', 'medio', 'bajo')),
+        status text NOT NULL DEFAULT 'nueva' CHECK (status IN ('nueva', 'atendida')),
+        detected_at timestamptz NOT NULL DEFAULT now(),
+        data jsonb NOT NULL,
+        created_at timestamptz NOT NULL DEFAULT now()
+      );
+
+      CREATE INDEX reputation_alerts_status_idx ON reputation_alerts (status, detected_at DESC);
+
+      -- Sensibilidad y palabras clave (una sola fila por instalación, id = 1).
+      CREATE TABLE alert_settings (
+        id smallint PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+        data jsonb NOT NULL,
+        updated_at timestamptz NOT NULL DEFAULT now()
+      );
+    `,
+  },
 ];

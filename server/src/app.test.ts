@@ -9,6 +9,7 @@ import {
   type ChannelSender,
 } from './modules/conversations/conversationService';
 import { AuthService } from './modules/auth/authService';
+import { MemoryAlertsRepository } from './modules/alerts/memoryAlertsRepository';
 import { MemoryAuthRepository } from './modules/auth/memoryAuthRepository';
 import { MemoryAssistantRepository } from './modules/assistant/memoryAssistantRepository';
 import { ReplyComposer } from './modules/autoreply/replyComposer';
@@ -48,6 +49,7 @@ const configured: AppConfig = {
     debugWebhook: false,
   },
   autoReply: { minConfidence: 0.7, timeZone: 'America/Costa_Rica' },
+  llm: { provider: '', apiKey: '', model: '', baseUrl: '', timeoutMs: 0 },
 };
 const unconfigured: AppConfig = {
   ...configured,
@@ -95,6 +97,7 @@ async function start(config: AppConfig, sender?: ChannelSender, { signedIn = tru
   const profile = new ProfileService(authRepository, businessRepository);
   const assistant = new MemoryAssistantRepository();
   const knowledge = new MemoryKnowledgeRepository();
+  const alerts = new MemoryAlertsRepository();
   const composer = new ReplyComposer(
     knowledge,
     assistant,
@@ -114,6 +117,7 @@ async function start(config: AppConfig, sender?: ChannelSender, { signedIn = tru
     assistant,
     knowledge,
     composer,
+    alerts,
     instagramLookup: async () => 'Ana IG',
     messengerLookup: async () => 'Luis FB',
   }).listen(0);
