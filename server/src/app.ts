@@ -18,6 +18,7 @@ import { createBusinessRouter, createProfileRouter } from './modules/profile/pro
 import type { ProfileService } from './modules/profile/profileService';
 import type { AlertsRepository } from './modules/alerts/alertsRepository';
 import { createAlertsRouter } from './modules/alerts/alertsRouter';
+import type { CommentAnalyzer } from './modules/alerts/commentAnalyzer';
 import { createCommentAnalyzer } from './modules/alerts/llmProviderFactory';
 import { createInstagramRouter, type ProfileLookup } from './modules/instagram/instagram.routes';
 import { createMessengerRouter } from './modules/messenger/messenger.routes';
@@ -33,6 +34,8 @@ export interface AppServices {
   composer: ReplyComposer;
   /** Almacena las alertas de reputación y su configuración. */
   alerts: AlertsRepository;
+  /** Analizador de comentarios compartido con la detección de alertas. Opcional: si falta, se crea según LLM_*. */
+  commentAnalyzer?: CommentAnalyzer;
   /** Busca el nombre de quien escribe por Instagram. Opcional: sin él, se guarda sin nombre. */
   instagramLookup?: ProfileLookup;
   /** Busca el nombre de quien escribe por Messenger. Opcional: sin él, se guarda sin nombre. */
@@ -108,7 +111,10 @@ export function createApp(appConfig: AppConfig, services: AppServices): Express 
   app.use(
     '/api/alerts',
     authenticated,
-    createAlertsRouter(services.alerts, createCommentAnalyzer(appConfig.llm)),
+    createAlertsRouter(
+      services.alerts,
+      services.commentAnalyzer ?? createCommentAnalyzer(appConfig.llm),
+    ),
   );
 
   app.use('/api', (_req, res) => {

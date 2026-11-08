@@ -5,7 +5,9 @@ import { createApp } from './app';
 import { loadConfig } from './config';
 import { runMigrations } from './db/migrate';
 import { createPool } from './db/pool';
+import { AlertDetectionService } from './modules/alerts/alertDetectionService';
 import type { AlertsRepository } from './modules/alerts/alertsRepository';
+import { createCommentAnalyzer } from './modules/alerts/llmProviderFactory';
 import { MemoryAlertsRepository } from './modules/alerts/memoryAlertsRepository';
 import { PostgresAlertsRepository } from './modules/alerts/postgresAlertsRepository';
 import { SAMPLE_ALERTS, SAMPLE_SETTINGS } from './modules/alerts/sampleAlerts';
@@ -136,6 +138,11 @@ async function main(): Promise<void> {
     minConfidence: appConfig.autoReply.minConfidence,
   }).attach();
 
+  // Alertas de reputación: cada texto entrante pasa por el analizador de comentarios (palabras
+  // clave o LLM, según la configuración) y, si hay riesgo, queda como alerta en /api/alerts.
+  const commentAnalyzer = createCommentAnalyzer(appConfig.llm);
+  new AlertDetectionService(conversations, alertsRepository, commentAnalyzer).attach();
+
   const server = createApp(appConfig, {
     auth,
     conversations,
@@ -144,6 +151,7 @@ async function main(): Promise<void> {
     knowledge: knowledgeRepository,
     composer,
     alerts: alertsRepository,
+    commentAnalyzer,
     instagramLookup: createInstagramProfileLookup(appConfig.instagram),
     messengerLookup: createMessengerProfileLookup(appConfig.messenger),
   }).listen(appConfig.server.port, () => {

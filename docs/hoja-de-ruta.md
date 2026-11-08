@@ -50,9 +50,12 @@ Ver [Servidor](servidor.md) y [Integración con WhatsApp](integracion-whatsapp.m
 
 ## Etapa 5. Alertas de reputación 🚧
 
-- 🚧 Detección de mensajes con riesgo (quejas, enojo, palabras clave): analizador de comentarios
-  por palabras clave (`BasicCommentAnalyzer`) con su contrato de pruebas; falta la fuente real de
-  comentarios de las redes
+- ✅ Detección de mensajes con riesgo (quejas, enojo, palabras clave): cada texto que llega por
+  WhatsApp, Instagram o Messenger pasa por el analizador (palabras clave o IA) y, si el riesgo es
+  medio o alto según la sensibilidad, se guarda una alerta con su respuesta sugerida
+  (`AlertDetectionService`)
+- ⏳ Comentarios públicos de las redes (publicaciones y grupos) como fuente de alertas
+- ⏳ Aviso por WhatsApp al dueño y botones de responder de la tarjeta (público y privado)
 - ✅ Pantalla de Alertas con prioridad y acción rápida, conectada a la API (`/api/alerts`)
 - ✅ Almacenamiento de alertas y su configuración (memoria o PostgreSQL) y script de datos de
   ejemplo (`pnpm --filter @colibri/server alerts:seed`)
