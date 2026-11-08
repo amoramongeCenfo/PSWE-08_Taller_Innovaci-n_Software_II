@@ -3,6 +3,9 @@ import { alertsService } from '../features/alerts/alertsService';
 import { AlertList, AlertsTabs, RiskSettingsPanel, type AlertsTab } from '../features/alerts';
 import type { AlertSettings, ReputationAlert } from '../features/alerts/types';
 
+const fetchAlertsData = () =>
+  Promise.all([alertsService.listNew(), alertsService.listHistory(), alertsService.getSettings()]);
+
 /**
  * Alertas y comentarios delicados. Etapa 5 del roadmap.
  * Consume el servicio de alertas (área de análisis) para mostrar comentarios con riesgo
@@ -14,22 +17,21 @@ export function AlertasPage() {
   const [historial, setHistorial] = useState<ReputationAlert[]>([]);
   const [settings, setSettings] = useState<AlertSettings | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
       try {
-        const [fetchedNuevas, fetchedHistorial, fetchedSettings] = await Promise.all([
-          alertsService.listNew(),
-          alertsService.listHistory(),
-          alertsService.getSettings(),
-        ]);
+        const [fetchedNuevas, fetchedHistorial, fetchedSettings] = await fetchAlertsData();
         if (!cancelled) {
           setNuevas(fetchedNuevas);
           setHistorial(fetchedHistorial);
           setSettings(fetchedSettings);
         }
+      } catch {
+        if (!cancelled) setError(true);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -41,8 +43,21 @@ export function AlertasPage() {
     };
   }, []);
 
+  // Al marcar una alerta como atendida pasa de "Nuevas" al historial.
+  async function handleMarkAttended(id: string) {
+    try {
+      await alertsService.markAttended(id);
+      const [fetchedNuevas, fetchedHistorial] = await fetchAlertsData();
+      setNuevas(fetchedNuevas);
+      setHistorial(fetchedHistorial);
+      setError(false);
+    } catch {
+      setError(true);
+    }
+  }
+
   const alerts = tab === 'nuevas' ? nuevas : historial;
-  const isActive = settings !== null && !loading;
+  const isActive = settings !== null && !loading && !error;
 
   return (
     <div className="flex flex-col gap-space-xl">
@@ -56,7 +71,11 @@ export function AlertasPage() {
           ) : (
             <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-surface-container-high px-2.5 py-0.5 font-label-md text-label-md font-semibold text-on-surface-variant">
               <span aria-hidden="true" className="h-2 w-2 rounded-full bg-outline" />
-              {loading ? 'Cargando…' : 'Monitoreo pendiente de activar'}
+              {loading
+                ? 'Cargando…'
+                : error
+                  ? 'No se pudieron cargar las alertas'
+                  : 'Monitoreo pendiente de activar'}
             </span>
           )}
           <h1 className="font-display-lg text-display-lg tracking-tight text-on-surface">
@@ -76,7 +95,7 @@ export function AlertasPage() {
 
       <div className="grid items-start gap-space-lg xl:grid-cols-[minmax(0,1fr)_22rem]">
         <section aria-label={tab === 'nuevas' ? 'Alertas nuevas' : 'Historial de alertas'}>
-          <AlertList tab={tab} alerts={alerts} />
+          <AlertList tab={tab} alerts={alerts} onMarkAttended={handleMarkAttended} />
         </section>
         <aside>
           <RiskSettingsPanel settings={settings} />

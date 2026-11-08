@@ -83,6 +83,7 @@ let settings = { ...MOCK_SETTINGS };
 export const mockAlertsService: AlertsService = {
   listNew: () => Promise.resolve(MOCK_NUEVAS),
   listHistory: () => Promise.resolve(MOCK_HISTORIAL),
+  markAttended: () => Promise.resolve(),
   getSettings: () => Promise.resolve({ ...settings }),
   saveSettings: (patch) => {
     settings = { ...settings, ...patch };

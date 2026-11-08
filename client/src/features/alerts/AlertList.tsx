@@ -16,10 +16,12 @@ const EMPTY: Record<AlertsTab, { title: string; text: string }> = {
 interface AlertListProps {
   tab: AlertsTab;
   alerts: ReputationAlert[];
+  /** Marca una alerta como atendida. Solo aplica a las nuevas: en el historial no se muestra. */
+  onMarkAttended?: (id: string) => void;
 }
 
 /** Lista de alertas de una pestaña, o un aviso si no hay ninguna. */
-export function AlertList({ tab, alerts }: AlertListProps) {
+export function AlertList({ tab, alerts, onMarkAttended }: AlertListProps) {
   if (alerts.length === 0) {
     return <EmptyState icon="shield" className="py-16" {...EMPTY[tab]} />;
   }
@@ -27,7 +29,12 @@ export function AlertList({ tab, alerts }: AlertListProps) {
     <ul className="flex flex-col gap-space-md">
       {alerts.map((alert) => (
         <li key={alert.id}>
-          <AlertCard alert={alert} />
+          <AlertCard
+            alert={alert}
+            onMarkAttended={
+              tab === 'nuevas' && onMarkAttended ? () => onMarkAttended(alert.id) : undefined
+            }
+          />
         </li>
       ))}
     </ul>

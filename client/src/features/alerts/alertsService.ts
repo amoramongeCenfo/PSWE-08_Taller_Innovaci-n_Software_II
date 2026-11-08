@@ -12,8 +12,10 @@ import type { AlertSettings, ReputationAlert } from './types';
  *   listHistory  -> GET  /api/alerts/historial   Alertas atendidas
  *   getSettings  -> GET  /api/alerts/settings    Configuración actual
  *   saveSettings -> PATCH /api/alerts/settings   Actualiza sensibilidad y palabras clave
+ *   markAttended -> POST /api/alerts/:id/atender Pasa una alerta de "nueva" a "atendida"
  */
 export interface AlertsService {
+  markAttended(id: string): Promise<void>;
   listNew(): Promise<ReputationAlert[]>;
   listHistory(): Promise<ReputationAlert[]>;
   getSettings(): Promise<AlertSettings>;
