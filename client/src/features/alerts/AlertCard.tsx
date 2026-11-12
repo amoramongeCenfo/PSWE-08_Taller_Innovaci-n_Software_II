@@ -12,7 +12,13 @@ import type { ReputationAlert } from './types';
  * Una alerta: el comentario delicado, la conversación alrededor, la respuesta sugerida y las
  * acciones. El borde izquierdo lleva el color del nivel de riesgo.
  */
-export function AlertCard({ alert }: { alert: ReputationAlert }) {
+export function AlertCard({
+  alert,
+  onMarkAttended,
+}: {
+  alert: ReputationAlert;
+  onMarkAttended?: () => void;
+}) {
   return (
     <Card
       className={cx(
@@ -24,7 +30,7 @@ export function AlertCard({ alert }: { alert: ReputationAlert }) {
       <CommentQuote comment={alert.comment} />
       <ThreadReplies replies={alert.thread} />
       {alert.suggestedReply && <SuggestedReplyBox reply={alert.suggestedReply} />}
-      <AlertActions postUrl={alert.postUrl} />
+      <AlertActions postUrl={alert.postUrl} onMarkAttended={onMarkAttended} />
     </Card>
   );
 }

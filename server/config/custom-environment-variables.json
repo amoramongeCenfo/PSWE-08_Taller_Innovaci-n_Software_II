@@ -43,5 +43,12 @@
   "autoReply": {
     "minConfidence": "AUTOREPLY_MIN_CONFIDENCE",
     "timeZone": "AUTOREPLY_TIME_ZONE"
+  },
+  "llm": {
+    "provider": "LLM_PROVIDER",
+    "apiKey": "LLM_API_KEY",
+    "model": "LLM_MODEL",
+    "baseUrl": "LLM_BASE_URL",
+    "timeoutMs": "LLM_TIMEOUT_MS"
   }
 }

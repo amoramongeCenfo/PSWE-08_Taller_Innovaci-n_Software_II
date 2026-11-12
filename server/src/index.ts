@@ -5,6 +5,12 @@ import { createApp } from './app';
 import { loadConfig } from './config';
 import { runMigrations } from './db/migrate';
 import { createPool } from './db/pool';
+import { AlertDetectionService } from './modules/alerts/alertDetectionService';
+import type { AlertsRepository } from './modules/alerts/alertsRepository';
+import { createCommentAnalyzer } from './modules/alerts/llmProviderFactory';
+import { MemoryAlertsRepository } from './modules/alerts/memoryAlertsRepository';
+import { PostgresAlertsRepository } from './modules/alerts/postgresAlertsRepository';
+import { SAMPLE_ALERTS, SAMPLE_SETTINGS } from './modules/alerts/sampleAlerts';
 import type { AuthRepository } from './modules/auth/authRepository';
 import { AuthService } from './modules/auth/authService';
 import { MemoryAuthRepository } from './modules/auth/memoryAuthRepository';
@@ -48,6 +54,7 @@ interface Storage {
   business: BusinessRepository;
   assistant: AssistantRepository;
   knowledge: KnowledgeRepository;
+  alerts: AlertsRepository;
   pool: Pool | null;
 }
 
@@ -61,6 +68,8 @@ async function createStorage(): Promise<Storage> {
       business: new MemoryBusinessRepository(),
       assistant: new MemoryAssistantRepository(),
       knowledge: new MemoryKnowledgeRepository(),
+      // Sin base de datos se precargan alertas de ejemplo para poder ver la pantalla funcionando.
+      alerts: new MemoryAlertsRepository({ alerts: SAMPLE_ALERTS, settings: SAMPLE_SETTINGS }),
       pool: null,
     };
   }
@@ -74,6 +83,7 @@ async function createStorage(): Promise<Storage> {
     business: new PostgresBusinessRepository(pool),
     assistant: new PostgresAssistantRepository(pool),
     knowledge: new PostgresKnowledgeRepository(pool),
+    alerts: new PostgresAlertsRepository(pool),
     pool,
   };
 }
@@ -101,6 +111,7 @@ async function main(): Promise<void> {
     business: businessRepository,
     assistant: assistantRepository,
     knowledge: knowledgeRepository,
+    alerts: alertsRepository,
     pool,
   } = await createStorage();
 
@@ -127,6 +138,11 @@ async function main(): Promise<void> {
     minConfidence: appConfig.autoReply.minConfidence,
   }).attach();
 
+  // Alertas de reputación: cada texto entrante pasa por el analizador de comentarios (palabras
+  // clave o LLM, según la configuración) y, si hay riesgo, queda como alerta en /api/alerts.
+  const commentAnalyzer = createCommentAnalyzer(appConfig.llm);
+  new AlertDetectionService(conversations, alertsRepository, commentAnalyzer).attach();
+
   const server = createApp(appConfig, {
     auth,
     conversations,
@@ -134,6 +150,8 @@ async function main(): Promise<void> {
     assistant: assistantRepository,
     knowledge: knowledgeRepository,
     composer,
+    alerts: alertsRepository,
+    commentAnalyzer,
     instagramLookup: createInstagramProfileLookup(appConfig.instagram),
     messengerLookup: createMessengerProfileLookup(appConfig.messenger),
   }).listen(appConfig.server.port, () => {

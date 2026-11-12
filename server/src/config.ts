@@ -51,6 +51,19 @@ export interface AutoReplyConfig {
   timeZone: string;
 }
 
+export interface LlmConfig {
+  /** Proveedor del modelo de lenguaje: "anthropic", "openai" o vacío para no usar IA. */
+  provider: string;
+  /** Clave del servicio. Si está vacía, el análisis de alertas usa solo palabras clave. */
+  apiKey: string;
+  /** Modelo a usar; si está vacío, cada proveedor usa uno por defecto. */
+  model: string;
+  /** URL base del proveedor; vacío usa la oficial. Útil para Ollama, un gateway o pruebas. */
+  baseUrl: string;
+  /** Tiempo máximo de espera en milisegundos; 0 usa el valor por defecto del proveedor. */
+  timeoutMs: number;
+}
+
 export interface AppConfig {
   server: { port: number };
   cors: { origin: string };
@@ -67,6 +80,8 @@ export interface AppConfig {
   instagram: InstagramConfig;
   messenger: MessengerConfig;
   autoReply: AutoReplyConfig;
+  /** Modelo de lenguaje para el análisis de alertas de reputación (opcional). */
+  llm: LlmConfig;
 }
 
 // Único punto de acceso a la configuración: tipado y validado al arrancar.
@@ -107,6 +122,13 @@ export function loadConfig(): AppConfig {
     autoReply: {
       minConfidence: Number(config.get<string | number>('autoReply.minConfidence')),
       timeZone: config.get<string>('autoReply.timeZone'),
+    },
+    llm: {
+      provider: config.get<string>('llm.provider'),
+      apiKey: config.get<string>('llm.apiKey'),
+      model: config.get<string>('llm.model'),
+      baseUrl: config.get<string>('llm.baseUrl'),
+      timeoutMs: Number(config.get<string | number>('llm.timeoutMs')) || 0,
     },
   };
 
